@@ -22,7 +22,7 @@ export const ExistingUserLogin = () => {
     let payload = userLogin;
     try {
       let response = await loginUser(dispatch, payload)
-      if (!response.username) return;
+      if (!response.token) return alert('Invalid login', errorMessage);
       history.push('/')
     } catch (error) {
       console.log(error)

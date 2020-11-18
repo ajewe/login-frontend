@@ -12,7 +12,7 @@ export const createUser = async ( dispatch, signupPayload ) => {
     let response = await fetch(`${ process.env.REACT_APP_API_URL }/users`, requestOptions);
     let data = await response.json();
 
-    if (data) {
+    if (data.success) {
       dispatch({ type: 'SIGNUP_SUCCESS' });
       return data;
     }
@@ -36,8 +36,8 @@ export const loginUser = async ( dispatch, loginPayload ) => {
     dispatch({ type: 'REQUEST_LOGIN' });
     let response = await fetch(`${ process.env.REACT_APP_API_URL }/session`, requestOptions);
     let data = await response.json();
-
-    if (data) {
+    
+    if (data.token) {
       dispatch({ type: 'LOGIN_SUCCESS', payload: data });
       localStorage.setItem('currentUser', JSON.stringify(data));
       return data;
@@ -54,3 +54,31 @@ export const logout = async ( dispatch ) => {
   localStorage.removeItem('currentUser');
   localStorage.removeItem('token');
 }
+
+export const getUserData = async ( dispatch, userId, userToken ) => {
+  const requestOptions = {
+    headers: {
+      // "Access-Control-Allow-Headers" : "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+      // "Access-Control-Allow-Origin": "*",
+      // "Access-Control-Allow-Method": "GET",
+      // "Access-Control-Allow-Credentials": "true",
+      token: userToken
+    }
+  }
+  try {
+    dispatch({ type: 'REQUEST_DATA' });
+    console.log( 'yo', userId, userToken )
+    let response = await fetch(`${ process.env.REACT_APP_API_URL }/users/${userId}`, requestOptions);
+    let data = await response.json();
+    console.log('data requested', data)
+
+    if (data.username) {
+      dispatch({ type: 'FETCH_SUCCESS', payload: data });
+      return console.log('got data');
+    }
+    dispatch({ type: 'FETCH_ERROR' });
+    return;
+  } catch (error) {
+    dispatch({ type: 'FETCH_ERROR' });
+  }
+} 

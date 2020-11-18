@@ -9,8 +9,13 @@ let token = localStorage.getItem("currentUser")
   : "";
 
 export const initialState = {
-  userDetails: "" || user,
+  username: "" || user,
   token: "" || token,
+  userDetails: {
+    email: "",
+    firstName: "",
+    lastName: "",
+  },
   loading: false,
   errorMessage: null
 };
@@ -29,8 +34,8 @@ export const AuthReducer = ( initialState, action) =>  {
       };
     case "LOGIN_SUCCESS":
       return { 
-        ...initialState, 
-        userDetails: action.payload.username,
+        ...initialState,
+        username: action.payload.username,
         token: action.payload.token, 
         loading: false
       };
@@ -42,7 +47,7 @@ export const AuthReducer = ( initialState, action) =>  {
     case "LOGOUT":
       return {
         ...initialState,
-        userDetails: "",
+        username: "",
         token: ""
       };
     case "LOGIN_ERROR":
@@ -57,6 +62,27 @@ export const AuthReducer = ( initialState, action) =>  {
         loading: false,
         errorMessage: action.error
       };
+    case "REQUEST_DATA":
+      return {
+        ...initialState,
+        loading: true
+      };
+    case "FETCH_SUCCESS":
+      return {
+        ...initialState,
+        userDetails: {
+          email: action.payload.email,
+          firstName: action.payload.firstName,
+          lastName: action.payload.lastName,
+        },
+        loading: false,
+      }
+      case "FETCH_ERROR":
+        return {
+          ...initialState,
+          loading: false,
+          errorMessage: "Error getting data"
+        };
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
   }
